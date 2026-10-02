@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C++ MadLibs: Make It Weird</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&amp;family=Patrick+Hand&amp;display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sun:#FFE14A; --tomato:#FF4B3E; --blue:#2F6BFF; --lime:#7BE04B;
+    --pink:#FF7CC8; --ink:#17120D; --paper:#FFFDF4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 1.2rem .8rem 3.5rem;
+    color: var(--ink);
+    font: 400 22px/1.3 'Patrick Hand', 'Comic Sans MS', cursive, sans-serif;
+    background-color: var(--sun);
+    background-image: radial-gradient(circle, rgba(255,75,62,.35) 0 4px, transparent 5px);
+    background-size: 28px 28px;
+  }
+  main { max-width: 44rem; margin: 0 auto; }
+
+  /* ---- title ---- */
+  .sign { text-align: center; margin: .4rem 0 1.6rem; }
+  .sign h1 {
+    display: inline-block; margin: 0;
+    padding: .1em .45em .15em;
+    font: 400 clamp(2.8rem, 13vw, 6rem)/1 'Bangers', Impact, sans-serif;
+    letter-spacing: .03em;
+    color: var(--paper);
+    background: var(--tomato);
+    border: 6px solid var(--ink);
+    border-radius: 18px;
+    transform: rotate(-3deg);
+    text-shadow: 4px 4px 0 var(--ink), -2px -2px 0 var(--ink), 2px -2px 0 var(--ink), -2px 2px 0 var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+  }
+  .sign p {
+    display: inline-block; margin: 1rem 0 0; padding: .2rem .9rem;
+    background: var(--paper); border: 4px solid var(--ink); border-radius: 12px;
+    transform: rotate(1.5deg); box-shadow: 4px 4px 0 var(--ink);
+  }
+
+  /* ---- cards ---- */
+  .panel {
+    margin-bottom: 1.6rem; padding: 1.2rem 1.3rem 1.4rem;
+    background: var(--paper);
+    border: 5px solid var(--ink); border-radius: 22px;
+    box-shadow: 9px 9px 0 var(--blue);
+  }
+  #formPanel { transform: rotate(.6deg); }
+  #storyPanel { transform: rotate(-.8deg); box-shadow: 9px 9px 0 var(--lime); }
+  .panel h2 { margin: 0 0 .3rem; font: 400 2.2rem/1 'Bangers', Impact, sans-serif; letter-spacing: .03em; }
+  .panel > p, form > p.tip { margin: 0 0 .8rem; }
+
+  .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 1.2rem; }
+  .fields label {
+    display: block; padding: .45rem .6rem .6rem;
+    background: var(--sun); border: 4px solid var(--ink); border-radius: 14px;
+    font-size: 1.05rem;
+  }
+  .fields label:nth-child(4n+1) { transform: rotate(-1.2deg); }
+  .fields label:nth-child(4n+2) { transform: rotate(1deg); background: var(--pink); }
+  .fields label:nth-child(4n+3) { transform: rotate(.8deg); background: var(--lime); }
+  .fields label:nth-child(4n)   { transform: rotate(-1deg); background: #9CC2FF; }
+  .fields input {
+    width: 100%; margin-top: .15rem; padding: .3rem .5rem;
+    font: inherit; font-size: 1.3rem; color: var(--ink);
+    background: #fff; border: 3px solid var(--ink); border-radius: 10px;
+  }
+  .fields input::placeholder { color: #8b8374; }
+  .fields input:focus-visible { outline: 4px solid var(--tomato); outline-offset: 2px; }
+
+  /* ---- buttons ---- */
+  button {
+    margin-top: 1.2rem; padding: .5rem 1.6rem .55rem;
+    font: 400 2rem/1 'Bangers', Impact, sans-serif; letter-spacing: .04em;
+    color: var(--paper); background: var(--tomato);
+    border: 5px solid var(--ink); border-radius: 16px;
+    box-shadow: 0 7px 0 var(--ink);
+    cursor: pointer;
+    transform: rotate(-1deg);
+    transition: transform .1s, box-shadow .1s;
+  }
+  button:hover:not(:disabled) { transform: rotate(1.5deg) scale(1.05); }
+  button:active:not(:disabled) { transform: translateY(6px); box-shadow: 0 1px 0 var(--ink); }
+  button:disabled { background: #b9b2a3; cursor: not-allowed; }
+  button:focus-visible { outline: 4px solid var(--blue); outline-offset: 4px; }
+
+  #status { min-height: 1.4em; margin: .8rem 0 0; font-size: 1.1rem; }
+
+  /* ---- the story ---- */
+  #output {
+    margin: .6rem 0 0; white-space: pre-wrap;
+    font: inherit; font-size: 1.45rem; line-height: 2.25rem;
+    padding: 1rem 1.2rem;
+    background-color: #fff;
+    background-origin: content-box; background-clip: padding-box;
+    background-image: repeating-linear-gradient(transparent 0 2.1rem, #BFD6FF 2.1rem 2.2rem, transparent 2.2rem 2.25rem);
+    border: 4px solid var(--ink); border-radius: 10px;
+  }
+  #storyPanel.pop { animation: pop .7s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes pop {
+    0%   { transform: rotate(-8deg) scale(.6); opacity: 0; }
+    100% { transform: rotate(-.8deg) scale(1); opacity: 1; }
+  }
+
+  @media (max-width: 560px) { .fields { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) {
+    #storyPanel.pop { animation: none; }
+    button { transition: none; }
+    button:hover:not(:disabled) { transform: rotate(-1deg); }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header class="sign">
+    <h1>C++ MadLibs</h1>
+    <p>You bring the nonsense. A C++ program does the rest.</p>
+  </header>
+
+  <section class="panel" id="formPanel">
+    <h2>Feed the machine!</h2>
+    <p>Words, phrases, whatever. The weirder the better.</p>
+    <form id="form" autocomplete="off">
+      <div class="fields" id="fields"></div>
+      <button id="run" type="submit" disabled>MAKE IT WEIRD!</button>
+      <p id="status" role="status">Warming up the nonsense engine...</p>
+    </form>
+  </section>
+
+  <section class="panel" id="storyPanel" hidden>
+    <h2>Behold, your masterpiece!</h2>
+    <pre id="output" aria-live="polite"></pre>
+    <button id="again" type="button">AGAIN! AGAIN!</button>
+  </section>
+</main>
+
+<script>
+(function () {
+  // Order matches the order the C++ program asks for them.
+  var FIELDS = [
+    { label: 'Adjective',                hint: 'sticky' },
+    { label: 'Noun',                     hint: 'grandma' },
+    { label: 'Verb',                     hint: 'yodel' },
+    { label: 'Noun',                     hint: 'trombone' },
+    { label: 'Adjective',                hint: 'moist' },
+    { label: 'Plural noun',              hint: 'meatballs' },
+    { label: 'Verb',                     hint: 'moonwalk' },
+    { label: 'Verb ending in -ing',      hint: 'burping' },
+    { label: 'Adjective',                hint: 'suspicious' },
+    { label: 'Noun',                     hint: 'cheeseburger' }
+  ];
+
+  var fieldsBox = document.getElementById('fields');
+  var form   = document.getElementById('form');
+  var runBtn = document.getElementById('run');
+  var again  = document.getElementById('again');
+  var status = document.getElementById('status');
+  var output = document.getElementById('output');
+  var formPanel = document.getElementById('formPanel');
+  var storyPanel = document.getElementById('storyPanel');
+
+  var inputs = FIELDS.map(function (f, i) {
+    var wrap = document.createElement('label');
+    wrap.textContent = (i + 1) + '. ' + f.label;
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = f.hint;
+    wrap.appendChild(input);
+    fieldsBox.appendChild(wrap);
+    return input;
+  });
+
+  var queue = '';     // every answer as one string of characters
+  var cursor = 0;     // how far the program has read
+  var printed = [];   // whole lines the program has written
+
+  // A running C++ program cannot pause and wait for a typed answer,
+  // so the page gathers all ten answers first and feeds them in at once.
+  window.Module = {
+    noInitialRun: true,
+    stdin: function () {
+      return cursor < queue.length ? queue.charCodeAt(cursor++) : null;
+    },
+    print: function (line) { printed.push(line); },
+    printErr: function (line) { console.warn('[stderr]', line); },
+    onRuntimeInitialized: function () {
+      runBtn.disabled = false;
+      status.textContent = 'Nonsense engine ready. Go on.';
+    }
+  };
+
+  // The prompts all contain "Please enter ". The story is everything
+  // the program prints after the last prompt.
+  function story() {
+    var last = -1;
+    printed.forEach(function (line, i) {
+      if (line.indexOf('Please enter ') !== -1) last = i;
+    });
+    return printed.slice(last + 1).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var values = inputs.map(function (el) { return el.value.trim(); });
+    var firstEmpty = values.indexOf('');
+    if (firstEmpty !== -1) {
+      status.textContent = 'Every blank needs a word. Don\'t be shy!';
+      inputs[firstEmpty].focus();
+      return;
+    }
+
+    queue = values.join('\n') + '\n';
+    cursor = 0;
+    printed = [];
+    runBtn.disabled = true;
+    status.textContent = 'Stirring the chaos...';
+
+    try {
+      Module.callMain([]);
+    } catch (err) {
+      // A normal exit throws ExitStatus. Anything else is a real fault.
+      if (!err || err.name !== 'ExitStatus') {
+        status.textContent = 'The program stopped early. See the browser console.';
+        console.error(err);
+        return;
+      }
+    }
+
+    output.textContent = story();
+    formPanel.hidden = true;
+    storyPanel.hidden = false;
+    storyPanel.classList.add('pop');
+    again.focus();
+  });
+
+  // main() can only run once per page load, so playing again means a reload.
+  again.addEventListener('click', function () { location.reload(); });
+})();
+</script>
+
+{{{ SCRIPT }}}
+
+</body>
+</html>
